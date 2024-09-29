@@ -13,25 +13,21 @@ public sealed class BuildLifetime : FrostingLifetime<PleOpsBuildContext>
 {
     public override void Setup(PleOpsBuildContext context, ISetupContext info)
     {
-        // HERE you can set default values overridable by command-line
-        // TODO EXAMPLE: context.WarningsAsErrors = false;
-        context.DotNetContext.ApplicationProjects.Add(new ProjectPublicationInfo(
-            "./src/MyConsole", new[] { "win-x64", "linux-x64", "osx-x64" }, "net8.0"));
+        context.DotNetContext.CoverageTarget = 0; // no tests for now
 
-        // Update build parameters from command line arguments.
+        context.DotNetContext.ApplicationProjects.Add(new ProjectPublicationInfo(
+            "./src/PleOps.Explitwiser.Console", [ "win-x64", "linux-x64", "osx-x64" ], "net8.0"));
+
         context.ReadArguments();
 
-        // HERE you can force values non-overridable.
-        context.DotNetContext.PreviewNuGetFeed = "https://pkgs.dev.azure.com/benito356/NetDevOpsTest/_packaging/Example-Preview/nuget/v3/index.json";
-        context.DotNetContext.StableNuGetFeed = "https://pkgs.dev.azure.com/benito356/NetDevOpsTest/_packaging/Example-Preview/nuget/v3/index.json";
+        // context.DotNetContext.PreviewNuGetFeed = "https://pkgs.dev.azure.com/pleonex/Pleosoft/_packaging/Pleosoft-Preview/nuget/v3/index.json";
+        // context.DotNetContext.StableNuGetFeed = "https://pkgs.dev.azure.com/pleonex/Pleosoft/_packaging/Pleosoft-Preview/nuget/v3/index.json";
 
-        // Print the build info to use.
         context.Print();
     }
 
     public override void Teardown(PleOpsBuildContext context, ITeardownContext info)
     {
-        // Save the info from the existing artifacts for the next execution (e.g. deploy job)
         context.DeliveriesContext.Save();
     }
 }

@@ -5,11 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Run MyConsole",
+            "name": "Explitwiser",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "Build",
-            "program": "${workspaceFolder}/src/MyConsole/bin/Debug/net8.0/MyConsole.dll",
+            "program": "${workspaceFolder}/src/PleOps.Explitwiser.Console/bin/Debug/net8.0/PleOps.Explitwiser.Console.dll",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,

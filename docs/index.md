@@ -1,17 +1,6 @@
-# .NET project template
+# Explitwiser
 
-Repository template for .NET projects with a complete DevOps workflow. It uses
-the build system and best-practices from
-[PleOps.Cake](https://www.pleonex.dev/PleOps.Cake/).
+> [!WARNING]  
+> I have no intention to maintain this project.
 
-- ♻️ DevOps best practices for a software project
-- 🔧 Build, test and release .NET projects
-- 📚 Documentation
-- 🤖 Continuous integration
-
-## Tech stack
-
-- **Projects**: C# / .NET
-- **Documentation**: DocFX, GitHub page
-- **CI**: GitHub Actions
-- **Release deployment**: NuGet feeds, GitHub
+Export your account data from Splitwise.

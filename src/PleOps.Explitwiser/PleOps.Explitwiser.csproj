@@ -1,18 +1,21 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>My custom public library.</Description>
+    <Description>Export data from a Splitwise account</Description>
     <IsPackable>true</IsPackable>
 
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFramework>net8.0</TargetFramework>
 
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="../../docs/images/logo_128.png" Pack="true" PackagePath="$(PackageIcon)" Visible="false" />
     <None Include="../../docs/index.md" Pack="true" PackagePath="$(PackageReadmeFile)" Visible="False" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PleOps.Splitwise.Client\PleOps.Splitwise.Client.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PleOps.Splitwise.Client", "PleOps.Splitwise.Client\PleOps.Splitwise.Client.csproj", "{068F0945-1374-4032-94B8-85544B3879C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PleOps.Explitwiser", "PleOps.Explitwiser\PleOps.Explitwiser.csproj", "{8777ECF0-2D71-4A33-ADD6-6EDE448A9DF5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PleOps.Explitwiser.Console", "PleOps.Explitwiser.Console\PleOps.Explitwiser.Console.csproj", "{CE1A79A8-C460-4EB3-BCF1-609AB301DA95}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{068F0945-1374-4032-94B8-85544B3879C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{068F0945-1374-4032-94B8-85544B3879C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{068F0945-1374-4032-94B8-85544B3879C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{068F0945-1374-4032-94B8-85544B3879C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8777ECF0-2D71-4A33-ADD6-6EDE448A9DF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8777ECF0-2D71-4A33-ADD6-6EDE448A9DF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8777ECF0-2D71-4A33-ADD6-6EDE448A9DF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8777ECF0-2D71-4A33-ADD6-6EDE448A9DF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE1A79A8-C460-4EB3-BCF1-609AB301DA95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE1A79A8-C460-4EB3-BCF1-609AB301DA95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE1A79A8-C460-4EB3-BCF1-609AB301DA95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE1A79A8-C460-4EB3-BCF1-609AB301DA95}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
