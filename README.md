@@ -1,4 +1,4 @@
-# .NET project template
+# Explitwiser
 
 <!-- markdownlint-disable MD033 -->
 <p align="center">
