@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using PleOps.Splitwise.Client;
 using PleOps.Splitwise.Client.Get_current_user;
+using PleOps.Splitwise.Client.Get_expenses;
 using PleOps.Splitwise.Client.Get_friends;
 using PleOps.Splitwise.Client.Get_groups;
 using PleOps.Splitwise.Client.Models;
@@ -18,6 +19,8 @@ using PleOps.Splitwise.Client.Models;
 /// </remarks>
 public class SplitwiseJsonExporter
 {
+    private const int ExpensesPerQuery = 100;
+
     private static readonly JsonSerializerOptions jsonOptions = new() {
         WriteIndented = true,
     };
@@ -50,7 +53,7 @@ public class SplitwiseJsonExporter
         Get_current_userGetResponse response = await client.Get_current_user.GetAsync()
             ?? throw new InvalidDataException("Unexpected data response");
 
-        if (downloadImages && response.User is not null) {
+        if (downloadImages) {
             await resourcesExporter.ExportUserAsync(response.User, outputDirectory);
         }
 
@@ -105,7 +108,24 @@ public class SplitwiseJsonExporter
     /// <returns>Asynchronous operation.</returns>
     public async Task ExportExpensesAsync(string outputDirectory, bool downloadImages)
     {
+        int index = 0;
+        Get_expensesGetResponse? response;
+        do {
 
+            response = await client.Get_expenses.GetAsync(config => {
+                config.QueryParameters.Offset = index * ExpensesPerQuery;
+                config.QueryParameters.Limit = ExpensesPerQuery;
+            }) ?? throw new InvalidDataException("Unexpected data response");
+
+            if (downloadImages && response.Expenses is { Count: > 0 }) {
+                foreach (Expense expense in response.Expenses) {
+                    await resourcesExporter.ExportExpenseAsync(expense, outputDirectory);
+                }
+            }
+
+            await SerializeDataAsync(response, outputDirectory, $"expenses_{index}.json");
+            index++;
+        } while (response is { Expenses.Count: ExpensesPerQuery });
     }
 
     private static async Task SerializeDataAsync<T>(T data, string outputDirectory, string name)

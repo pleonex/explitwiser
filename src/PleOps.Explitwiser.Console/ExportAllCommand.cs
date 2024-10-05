@@ -57,6 +57,10 @@ internal class ExportAllCommand : AsyncCommand<ExportAllCommand.Settings>
             async _ => await exporter.ExportGroupsAsync(outputDirectory, downloadResources));
         AnsiConsole.MarkupLine("Groups [green]exported[/]");
 
+        await AnsiConsole.Status().StartAsync(
+            "Exporting expenses",
+            async _ => await exporter.ExportExpensesAsync(outputDirectory, downloadResources));
+
         return 0;
     }
 }

@@ -18,9 +18,9 @@ public class SplitwiseResourcesExporter
     /// <param name="user">User to export resources.</param>
     /// <param name="outputDirectory">The root output directory.</param>
     /// <returns>Asynchronous task.</returns>
-    public async Task ExportUserAsync(User user, string outputDirectory)
+    public async Task ExportUserAsync(User? user, string outputDirectory)
     {
-        if (user.Picture is null) {
+        if (user?.Picture is null) {
             return;
         }
 
@@ -54,6 +54,41 @@ public class SplitwiseResourcesExporter
         foreach (User member in group.Members ?? []) {
             await ExportUserAsync(member, outputDirectory);
         }
+    }
+
+    /// <summary>
+    /// Export ?
+    /// </summary>
+    /// <param name="expense">Expense to export resources.</param>
+    /// <param name="outputDirectory">The root output directory.</param>
+    /// <returns>Asynchronous task.</returns>
+    public async Task ExportExpenseAsync(Expense expense, string outputDirectory)
+    {
+        await ExportUserAsync(expense.CreatedBy, outputDirectory);
+        await ExportUserAsync(expense.UpdatedBy, outputDirectory);
+        await ExportUserAsync(expense.DeletedBy, outputDirectory);
+
+        if (expense.Receipt is not null) {
+            expense.Receipt.Original = await DownloadResourceAsync(expense.Receipt.Original, outputDirectory);
+            expense.Receipt.Large = await DownloadResourceAsync(expense.Receipt.Large, outputDirectory);
+        }
+
+        foreach (Share user in expense.Users ?? []) {
+            await ExportCommentUserAsync(user.User, outputDirectory);
+        }
+
+        foreach (Comment comment in expense.Comments ?? []) {
+            await ExportCommentUserAsync(comment.User, outputDirectory);
+        }
+    }
+
+    private async Task ExportCommentUserAsync(Comment_user? commentUser, string outputDirectory)
+    {
+        if (commentUser?.Picture is null) {
+            return;
+        }
+
+        commentUser.Picture.Medium = await DownloadResourceAsync(commentUser.Picture.Medium, outputDirectory);
     }
 
     private async Task<string> DownloadResourceAsync(string? url, string outputDirectory)
