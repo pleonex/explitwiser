@@ -12,6 +12,24 @@
 
   <ItemGroup>
     <None Include="../../docs/index.md" Pack="true" PackagePath="$(PackageReadmeFile)" Visible="False" />
+
+    <None Include="swagger.json" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Kiota.Bundle" />
+  </ItemGroup>
+
+  <Target Name="GenerateClient" BeforeTargets="BeforeCompile;CoreCompile" Inputs="swagger.json" Outputs="$(IntermediateOutputPath)GeneratedClient/**/*.cs">
+
+    <Message Text="Generating client with Kiota" Importance="high" />
+    <Exec Command="dotnet tool restore" />
+    <Exec Command="dotnet tool run kiota generate --openapi swagger.json --language csharp --output $(IntermediateOutputPath)GeneratedClient --class-name SplitwiseClient --namespace-name PleOps.Splitwise.Client --exclude-backward-compatible" />
+
+    <ItemGroup>
+      <Compile Include="$(IntermediateOutputPath)GeneratedClient/**/*.cs" />
+      <FileWrites Include="$(IntermediateOutputPath)GeneratedClient/**/*.cs" />
+    </ItemGroup>
+  </Target>
 
 </Project>

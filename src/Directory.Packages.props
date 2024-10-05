@@ -1,6 +1,7 @@
 <Project>
-    <!-- Centralize dependency management -->
-    <ItemGroup>
-        <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.12.0.78982" />
-    </ItemGroup>
+  <!-- Centralize dependency management -->
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.Kiota.Bundle" Version="1.13.0" />
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.32.0.97167" />
+  </ItemGroup>
 </Project>
