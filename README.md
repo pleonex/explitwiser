@@ -2,8 +2,8 @@
 
 <!-- markdownlint-disable MD033 -->
 <p align="center">
-  <a href="https://github.com/pleonex/explitwiser/workflows/Build%20and%20release">
-    <img alt="Build and release" src="https://github.com/pleonex/explitwiser/workflows/Build%20and%20release/badge.svg?branch=main&event=push" />
+  <a href="https://github.com/pleonex/explitwiser/actions/workflows/build-and-release.yml">
+    <img alt="Build and release" src="https://github.com/pleonex/explitwiser/actions/workflows/build-and-release.yml/badge.svg" />
   </a>
   &nbsp;
   <a href="https://choosealicense.com/licenses/mit/">

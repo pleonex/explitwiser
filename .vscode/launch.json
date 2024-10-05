@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "Build",
-            "program": "${workspaceFolder}/src/PleOps.Explitwiser.Console/bin/Debug/net8.0/PleOps.Explitwiser.Console.dll",
+            "program": "${workspaceFolder}/src/PleOps.Explitwiser.Console/bin/Debug/net8.0/Explitwiser.Console.dll",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
