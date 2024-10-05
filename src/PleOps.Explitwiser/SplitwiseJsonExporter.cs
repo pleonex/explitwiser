@@ -4,6 +4,7 @@ using System;
 using System.Text.Json;
 using System.Threading.Tasks;
 using PleOps.Splitwise.Client;
+using PleOps.Splitwise.Client.Get_comments;
 using PleOps.Splitwise.Client.Get_current_user;
 using PleOps.Splitwise.Client.Get_expenses;
 using PleOps.Splitwise.Client.Get_friends;
@@ -19,7 +20,7 @@ using PleOps.Splitwise.Client.Models;
 /// </remarks>
 public class SplitwiseJsonExporter
 {
-    private const int ExpensesPerQuery = 100;
+    private const int DefaultExpensesPerQuery = 100;
 
     private static readonly JsonSerializerOptions jsonOptions = new() {
         WriteIndented = true,
@@ -105,27 +106,49 @@ public class SplitwiseJsonExporter
     /// </summary>
     /// <param name="outputDirectory">Directory to save the export.</param>
     /// <param name="downloadImages">Value indicating whether the linked images should be downloaded or kept as URLs.</param>
+    /// <param name="downloadComments">Value indicating whether it will fetch the expense comments.</param>
+    /// <param name="expensesPerQuery">Number of expenses to retrieve per API query.</param>
     /// <returns>Asynchronous operation.</returns>
-    public async Task ExportExpensesAsync(string outputDirectory, bool downloadImages)
+    public async Task ExportExpensesAsync(
+        string outputDirectory,
+        bool downloadImages,
+        bool downloadComments,
+        int expensesPerQuery = DefaultExpensesPerQuery)
     {
         int index = 0;
         Get_expensesGetResponse? response;
         do {
 
             response = await client.Get_expenses.GetAsync(config => {
-                config.QueryParameters.Offset = index * ExpensesPerQuery;
-                config.QueryParameters.Limit = ExpensesPerQuery;
+                config.QueryParameters.Offset = index * expensesPerQuery;
+                config.QueryParameters.Limit = expensesPerQuery;
             }) ?? throw new InvalidDataException("Unexpected data response");
 
-            if (downloadImages && response.Expenses is { Count: > 0 }) {
-                foreach (Expense expense in response.Expenses) {
+            foreach (Expense expense in response.Expenses ?? []) {
+                if (downloadComments) {
+                    await FetchExpenseCommentsAsync(expense);
+                }
+
+                if (downloadImages) {
                     await resourcesExporter.ExportExpenseAsync(expense, outputDirectory);
                 }
             }
 
             await SerializeDataAsync(response, outputDirectory, $"expenses_{index}.json");
             index++;
-        } while (response is { Expenses.Count: ExpensesPerQuery });
+        } while (response.Expenses?.Count == expensesPerQuery);
+    }
+
+    private async Task FetchExpenseCommentsAsync(Expense expense)
+    {
+        if (expense.CommentsCount == 0) {
+            return;
+        }
+
+        Get_commentsGetResponse response = await client.Get_comments.GetAsync(
+            config => config.QueryParameters.ExpenseId = expense.Id)
+             ?? throw new InvalidDataException("Unexpected data response");
+        expense.Comments = response.Comments;
     }
 
     private static async Task SerializeDataAsync<T>(T data, string outputDirectory, string name)

@@ -19,6 +19,15 @@ internal class ExportAllCommand : AsyncCommand<ExportAllCommand.Settings>
         [CommandOption("--skip-images")]
         [Description("Do not download the associated images like avatars or receipts")]
         public bool SkipImages { get; set; }
+
+        [CommandOption("--skip-comments")]
+        [Description("Do not export expenses comments (takes longer)")]
+        public bool SkipComments { get; set; }
+
+        [CommandOption("--expenses-per-query")]
+        [Description("Number of expenses to fetch per API query")]
+        [DefaultValue(100)]
+        public int ExpensesPerQuery { get; set; }
     }
 
     public override async Task<int> ExecuteAsync(CommandContext context, Settings settings)
@@ -41,6 +50,7 @@ internal class ExportAllCommand : AsyncCommand<ExportAllCommand.Settings>
 
         string outputDirectory = Path.GetFullPath(settings.Output);
         bool downloadResources = !settings.SkipImages;
+        bool downloadComments = !settings.SkipComments;
 
         await AnsiConsole.Status().StartAsync(
             "Exporting user profile",
@@ -59,7 +69,11 @@ internal class ExportAllCommand : AsyncCommand<ExportAllCommand.Settings>
 
         await AnsiConsole.Status().StartAsync(
             "Exporting expenses",
-            async _ => await exporter.ExportExpensesAsync(outputDirectory, downloadResources));
+            async _ => await exporter.ExportExpensesAsync(
+                outputDirectory,
+                downloadResources,
+                downloadComments,
+                settings.ExpensesPerQuery));
 
         return 0;
     }

@@ -57,7 +57,7 @@ public class SplitwiseResourcesExporter
     }
 
     /// <summary>
-    /// Export ?
+    /// Export avatar of related users and the receipt.
     /// </summary>
     /// <param name="expense">Expense to export resources.</param>
     /// <param name="outputDirectory">The root output directory.</param>

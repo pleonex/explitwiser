@@ -1443,7 +1443,8 @@
             "in": "query",
             "name": "expense_id",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "format": "int64"
             },
             "required": true,
             "example": 4193
@@ -2247,6 +2248,7 @@
           },
           "relation_id": {
             "type": "integer",
+            "format": "int64",
             "example": 855870953,
             "description": "ID of the subject of the comment"
           },
