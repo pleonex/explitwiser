@@ -13,7 +13,7 @@ IConfigurationRoot configuration = new ConfigurationBuilder()
 string? apiKey = configuration["ApiKey"];
 if (string.IsNullOrWhiteSpace(apiKey)) {
     AnsiConsole.MarkupLine("[red]Missing API key[/]");
-    AnsiConsole.WriteLine("Specify it via the environment variable SPLITWISE_API_KEY or in the file secrets.json");
+    AnsiConsole.WriteLine("Specify it via the environment variable SPLITWISE_ApiKey or in the file secrets.json");
     return;
 }
 

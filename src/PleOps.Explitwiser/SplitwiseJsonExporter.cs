@@ -1,7 +1,6 @@
 ﻿namespace PleOps.Explitwiser;
 
 using System;
-using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using PleOps.Splitwise.Client;
@@ -54,6 +53,53 @@ public class SplitwiseJsonExporter
         }
 
         await SerializeDataAsync(response, outputDirectory, "profile.json");
+    }
+
+    /// <summary>
+    /// Export the information of all groups the user belongs.
+    /// </summary>
+    /// <param name="outputDirectory">Directory to save the export.</param>
+    /// <param name="downloadImages">Value indicating whether the linked images should be downloaded or kept as URLs.</param>
+    /// <returns>Asynchronous operation.</returns>
+    public async Task ExportGroupsAsync(string outputDirectory, bool downloadImages)
+    {
+        Get_groupsGetResponse response = await client.Get_groups.GetAsync()
+            ?? throw new InvalidDataException("Unexpected data response");
+
+        if (downloadImages && response.Groups is { Count: > 0 }) {
+            foreach (Group group in response.Groups) {
+                await ExportGroupResourcesAsync(group, outputDirectory);
+            }
+        }
+
+        await SerializeDataAsync(response, outputDirectory, "groups.json");
+    }
+
+    private static async Task ExportGroupResourcesAsync(Group group, string outputDirectory)
+    {
+        if (group.Avatar is not null) {
+            group.Avatar.Original = await DownloadResourceAsync(group.Avatar.Original, outputDirectory);
+            group.Avatar.Small = await DownloadResourceAsync(group.Avatar.Small, outputDirectory);
+            group.Avatar.Medium = await DownloadResourceAsync(group.Avatar.Medium, outputDirectory);
+            group.Avatar.Large = await DownloadResourceAsync(group.Avatar.Large, outputDirectory);
+            group.Avatar.Xlarge = await DownloadResourceAsync(group.Avatar.Xlarge, outputDirectory);
+            group.Avatar.Xxlarge = await DownloadResourceAsync(group.Avatar.Xxlarge, outputDirectory);
+        }
+
+        if (group.CoverPhoto is not null) {
+            group.CoverPhoto.Xlarge = await DownloadResourceAsync(group.CoverPhoto.Xlarge, outputDirectory);
+            group.CoverPhoto.Xxlarge = await DownloadResourceAsync(group.CoverPhoto.Xxlarge, outputDirectory);
+        }
+
+        IEnumerable<User_picture> membersPicture = group.Members?
+            .Select(m => m.Picture!)
+            .Where(p => p != null)
+            ?? [];
+        foreach (User_picture picture in membersPicture) {
+            picture.Small = await DownloadResourceAsync(picture.Small, outputDirectory);
+            picture.Medium = await DownloadResourceAsync(picture.Medium, outputDirectory);
+            picture.Large = await DownloadResourceAsync(picture.Large, outputDirectory);
+        }
     }
 
     private static async Task SerializeDataAsync<T>(T data, string outputDirectory, string name)
