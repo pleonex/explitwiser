@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <AssemblyName>Explitwiser.Console</AssemblyName>
 
     <TargetFramework>net8.0</TargetFramework>
 

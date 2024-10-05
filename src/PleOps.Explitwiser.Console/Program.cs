@@ -8,6 +8,7 @@ app.Configure(config => {
     config.ValidateExamples();
 #endif
 
+    config.SetApplicationName("Explitwiser.Console");
     config.AddCommand<ExportAllCommand>("export-all");
 });
 return await app.RunAsync(args);
