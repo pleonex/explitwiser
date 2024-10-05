@@ -119,10 +119,10 @@ public class SplitwiseJsonExporter
         }
 
         var uri = new Uri(url);
-        string outputFile = Path.Combine(outputDirectory, uri.LocalPath[1..]);
-        outputFile = Path.GetFullPath(outputFile); // normalize \ / path separators
+        string relativePath = uri.LocalPath[1..];
+        string outputFile = Path.GetFullPath(relativePath, outputDirectory);
         if (File.Exists(outputFile)) {
-            return outputFile;
+            return relativePath;
         }
 
         EnsureDirectoryExists(outputFile);
@@ -131,7 +131,7 @@ public class SplitwiseJsonExporter
         using Stream responseStream = await resourcesClient.GetStreamAsync(uri);
 
         await responseStream.CopyToAsync(outputStream);
-        return outputFile;
+        return relativePath;
     }
 
     private static void EnsureDirectoryExists(string filePath)
