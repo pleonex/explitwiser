@@ -52,11 +52,12 @@ ARGUMENTS:
     [Output]    The root output directory
 
 OPTIONS:
-                                DEFAULT
-    -h, --help                             Prints help information
-        --skip-images                      Do not download the associated images like avatars or receipts
-        --skip-comments                    Do not export expenses comments (takes longer)
-        --expenses-per-query    100        Number of expenses to fetch per API query
+                                 DEFAULT
+    -h, --help                              Prints help information
+        --skip-images                       Do not download the associated images like avatars or receipts
+        --skip-comments                     Do not export expenses comments (takes longer)
+        --expenses-per-query     500        Number of expenses to fetch per API query
+        --notifications-limit    10000      Maximum number of notifications to retrieve
 ```
 
 ## Build
