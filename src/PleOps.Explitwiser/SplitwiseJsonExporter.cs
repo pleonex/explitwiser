@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using PleOps.Splitwise.Client;
 using PleOps.Splitwise.Client.Get_current_user;
+using PleOps.Splitwise.Client.Get_friends;
 using PleOps.Splitwise.Client.Get_groups;
 using PleOps.Splitwise.Client.Models;
 
@@ -74,6 +75,37 @@ public class SplitwiseJsonExporter
         }
 
         await SerializeDataAsync(response, outputDirectory, "groups.json");
+    }
+
+    /// <summary>
+    /// Export the list of friends in Splitwise.
+    /// </summary>
+    /// <param name="outputDirectory">Directory to save the export.</param>
+    /// <param name="downloadImages">Value indicating whether the linked images should be downloaded or kept as URLs.</param>
+    /// <returns>Asynchronous operation.</returns>
+    public async Task ExportFriendsAsync(string outputDirectory, bool downloadImages)
+    {
+        Get_friendsGetResponse response = await client.Get_friends.GetAsync()
+            ?? throw new InvalidDataException("Unexpected data response");
+
+        if (downloadImages && response.Friends is { Count: > 0 }) {
+            foreach (Friend friend in response.Friends) {
+                await resourcesExporter.ExportUserAsync(friend, outputDirectory);
+            }
+        }
+
+        await SerializeDataAsync(response, outputDirectory, "friends.json");
+    }
+
+    /// <summary>
+    /// Export all the expenses where the user is part of.
+    /// </summary>
+    /// <param name="outputDirectory">Directory to save the export.</param>
+    /// <param name="downloadImages">Value indicating whether the linked images should be downloaded or kept as URLs.</param>
+    /// <returns>Asynchronous operation.</returns>
+    public async Task ExportExpensesAsync(string outputDirectory, bool downloadImages)
+    {
+
     }
 
     private static async Task SerializeDataAsync<T>(T data, string outputDirectory, string name)

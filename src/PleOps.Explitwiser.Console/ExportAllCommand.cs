@@ -42,17 +42,20 @@ internal class ExportAllCommand : AsyncCommand<ExportAllCommand.Settings>
         string outputDirectory = Path.GetFullPath(settings.Output);
         bool downloadResources = !settings.SkipImages;
 
-        await AnsiConsole.Status()
-            .StartAsync(
-                "Exporting user profile",
-                async _ => await exporter.ExportUserProfileAsync(outputDirectory, downloadResources));
+        await AnsiConsole.Status().StartAsync(
+            "Exporting user profile",
+            async _ => await exporter.ExportUserProfileAsync(outputDirectory, downloadResources));
         AnsiConsole.MarkupLine("User profile [green]exported[/]");
 
-        await AnsiConsole.Status()
-            .StartAsync(
-                "Exporting user groups",
-                async _ => await exporter.ExportGroupsAsync(outputDirectory, downloadResources));
-        AnsiConsole.MarkupLine("User groups [green]exported[/]");
+        await AnsiConsole.Status().StartAsync(
+            "Exporting friend list",
+            async _ => await exporter.ExportFriendsAsync(outputDirectory, downloadResources));
+        AnsiConsole.MarkupLine("Friend list [green]exported[/]");
+
+        await AnsiConsole.Status().StartAsync(
+            "Exporting groups",
+            async _ => await exporter.ExportGroupsAsync(outputDirectory, downloadResources));
+        AnsiConsole.MarkupLine("Groups [green]exported[/]");
 
         return 0;
     }
