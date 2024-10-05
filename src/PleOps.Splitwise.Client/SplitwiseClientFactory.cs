@@ -28,21 +28,21 @@ public static class SplitwiseClientFactory
         // In this case the default value comes from the openapi spec.
         HttpClient httpClient = KiotaClientFactory.Create(null, httpOptions);
 
-        var apiKeyAuth = new ApiKeyAuthenticationProvider(
-            "Authorization",
-            $"Bearer {apiKey}",
-            ApiKeyAuthenticationProvider.KeyLocation.Header);
-
-        var adapter = new HttpClientRequestAdapter(new BaseBearerTokenAuthenticationProvider(new Test(apiKey)), httpClient: httpClient);
+        var tokenProvider = new ApiKeyAccessTokenProvider(apiKey);
+        var authProvider = new BaseBearerTokenAuthenticationProvider(tokenProvider);
+        var adapter = new HttpClientRequestAdapter(authProvider, httpClient: httpClient);
 
         return new SplitwiseClient(adapter);
     }
 
-    private sealed class Test(string apiKey) : IAccessTokenProvider
+    private sealed class ApiKeyAccessTokenProvider(string apiKey) : IAccessTokenProvider
     {
         public AllowedHostsValidator AllowedHostsValidator => throw new NotImplementedException();
 
-        public Task<string> GetAuthorizationTokenAsync(Uri uri, Dictionary<string, object>? additionalAuthenticationContext = null, CancellationToken cancellationToken = default)
+        public Task<string> GetAuthorizationTokenAsync(
+            Uri uri,
+            Dictionary<string, object>? additionalAuthenticationContext = null,
+            CancellationToken cancellationToken = default)
         {
             return Task.FromResult(apiKey);
         }
