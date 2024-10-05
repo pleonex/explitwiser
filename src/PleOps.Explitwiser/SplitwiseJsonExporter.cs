@@ -17,22 +17,25 @@ using PleOps.Splitwise.Client.Models;
 /// </remarks>
 public class SplitwiseJsonExporter
 {
-    private static readonly HttpClient resourcesClient = new();
     private static readonly JsonSerializerOptions jsonOptions = new() {
         WriteIndented = true,
     };
 
     private readonly SplitwiseClient client;
+    private readonly SplitwiseResourcesExporter resourcesExporter;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SplitwiseJsonExporter"/> class.
     /// </summary>
     /// <param name="client">The API client.</param>
-    public SplitwiseJsonExporter(SplitwiseClient client)
+    /// <param name="resourcesExporter">Exporter of resources.</param>
+    public SplitwiseJsonExporter(SplitwiseClient client, SplitwiseResourcesExporter resourcesExporter)
     {
         ArgumentNullException.ThrowIfNull(client);
+        ArgumentNullException.ThrowIfNull(resourcesExporter);
 
         this.client = client;
+        this.resourcesExporter = resourcesExporter;
     }
 
     /// <summary>
@@ -46,10 +49,8 @@ public class SplitwiseJsonExporter
         Get_current_userGetResponse response = await client.Get_current_user.GetAsync()
             ?? throw new InvalidDataException("Unexpected data response");
 
-        if (downloadImages && response.User?.Picture is not null) {
-            response.User.Picture.Small = await DownloadResourceAsync(response.User.Picture.Small, outputDirectory);
-            response.User.Picture.Medium = await DownloadResourceAsync(response.User.Picture.Medium, outputDirectory);
-            response.User.Picture.Large = await DownloadResourceAsync(response.User.Picture.Large, outputDirectory);
+        if (downloadImages && response.User is not null) {
+            await resourcesExporter.ExportUserAsync(response.User, outputDirectory);
         }
 
         await SerializeDataAsync(response, outputDirectory, "profile.json");
@@ -68,38 +69,11 @@ public class SplitwiseJsonExporter
 
         if (downloadImages && response.Groups is { Count: > 0 }) {
             foreach (Group group in response.Groups) {
-                await ExportGroupResourcesAsync(group, outputDirectory);
+                await resourcesExporter.ExportGroupAsync(group, outputDirectory);
             }
         }
 
         await SerializeDataAsync(response, outputDirectory, "groups.json");
-    }
-
-    private static async Task ExportGroupResourcesAsync(Group group, string outputDirectory)
-    {
-        if (group.Avatar is not null) {
-            group.Avatar.Original = await DownloadResourceAsync(group.Avatar.Original, outputDirectory);
-            group.Avatar.Small = await DownloadResourceAsync(group.Avatar.Small, outputDirectory);
-            group.Avatar.Medium = await DownloadResourceAsync(group.Avatar.Medium, outputDirectory);
-            group.Avatar.Large = await DownloadResourceAsync(group.Avatar.Large, outputDirectory);
-            group.Avatar.Xlarge = await DownloadResourceAsync(group.Avatar.Xlarge, outputDirectory);
-            group.Avatar.Xxlarge = await DownloadResourceAsync(group.Avatar.Xxlarge, outputDirectory);
-        }
-
-        if (group.CoverPhoto is not null) {
-            group.CoverPhoto.Xlarge = await DownloadResourceAsync(group.CoverPhoto.Xlarge, outputDirectory);
-            group.CoverPhoto.Xxlarge = await DownloadResourceAsync(group.CoverPhoto.Xxlarge, outputDirectory);
-        }
-
-        IEnumerable<User_picture> membersPicture = group.Members?
-            .Select(m => m.Picture!)
-            .Where(p => p != null)
-            ?? [];
-        foreach (User_picture picture in membersPicture) {
-            picture.Small = await DownloadResourceAsync(picture.Small, outputDirectory);
-            picture.Medium = await DownloadResourceAsync(picture.Medium, outputDirectory);
-            picture.Large = await DownloadResourceAsync(picture.Large, outputDirectory);
-        }
     }
 
     private static async Task SerializeDataAsync<T>(T data, string outputDirectory, string name)
@@ -107,38 +81,9 @@ public class SplitwiseJsonExporter
         string serializedData = JsonSerializer.Serialize(data, jsonOptions);
 
         string outputFile = Path.Combine(outputDirectory, name);
-        EnsureDirectoryExists(outputFile);
+        string directoryPath = Path.GetDirectoryName(outputFile)!;
+        _ = Directory.CreateDirectory(directoryPath);
 
         await File.WriteAllTextAsync(outputFile, serializedData);
-    }
-
-    private static async Task<string> DownloadResourceAsync(string? url, string outputDirectory)
-    {
-        if (string.IsNullOrWhiteSpace(url)) {
-            return string.Empty;
-        }
-
-        var uri = new Uri(url);
-        string relativePath = uri.LocalPath[1..];
-        string outputFile = Path.GetFullPath(relativePath, outputDirectory);
-        if (File.Exists(outputFile)) {
-            return relativePath;
-        }
-
-        EnsureDirectoryExists(outputFile);
-
-        using var outputStream = new FileStream(outputFile, FileMode.Create);
-        using Stream responseStream = await resourcesClient.GetStreamAsync(uri);
-
-        await responseStream.CopyToAsync(outputStream);
-        return relativePath;
-    }
-
-    private static void EnsureDirectoryExists(string filePath)
-    {
-        string directoryPath = Path.GetDirectoryName(filePath)!;
-        if (!Directory.Exists(directoryPath)) {
-            Directory.CreateDirectory(directoryPath);
-        }
     }
 }

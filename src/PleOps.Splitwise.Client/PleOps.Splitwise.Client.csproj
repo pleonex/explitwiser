@@ -8,6 +8,9 @@
 
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+    <!-- Ignore documentation warnings from generated code -->
+    <NoWarn>CS1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,7 +27,7 @@
 
     <Message Text="Generating client with Kiota" Importance="high" />
     <Exec Command="dotnet tool restore" />
-    <Exec Command="dotnet tool run kiota generate --openapi swagger.json --language csharp --output $(IntermediateOutputPath)GeneratedClient --class-name SplitwiseClient --namespace-name PleOps.Splitwise.Client --exclude-backward-compatible" />
+    <Exec Command="dotnet tool run kiota generate --openapi swagger.json --language csharp --output $(IntermediateOutputPath)GeneratedClient --class-name SplitwiseClient --namespace-name PleOps.Splitwise.Client --exclude-backward-compatible --log-level error" />
 
     <ItemGroup>
       <Compile Include="$(IntermediateOutputPath)GeneratedClient/**/*.cs" />
