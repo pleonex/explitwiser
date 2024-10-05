@@ -82,6 +82,17 @@ public class SplitwiseResourcesExporter
         }
     }
 
+    /// <summary>
+    /// Export the image of the notification.
+    /// </summary>
+    /// <param name="notification">Notification to export resources.</param>
+    /// <param name="outputDirectory">The root output directory.</param>
+    /// <returns>Asynchronous task.</returns>
+    public async Task ExportNotificationAsync(Notification notification, string outputDirectory)
+    {
+        notification.ImageUrl = await DownloadResourceAsync(notification.ImageUrl, outputDirectory);
+    }
+
     private async Task ExportCommentUserAsync(Comment_user? commentUser, string outputDirectory)
     {
         if (commentUser?.Picture is null) {

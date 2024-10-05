@@ -9,6 +9,7 @@ using PleOps.Splitwise.Client.Get_current_user;
 using PleOps.Splitwise.Client.Get_expenses;
 using PleOps.Splitwise.Client.Get_friends;
 using PleOps.Splitwise.Client.Get_groups;
+using PleOps.Splitwise.Client.Get_notifications;
 using PleOps.Splitwise.Client.Models;
 
 /// <summary>
@@ -20,8 +21,6 @@ using PleOps.Splitwise.Client.Models;
 /// </remarks>
 public class SplitwiseJsonExporter
 {
-    private const int DefaultExpensesPerQuery = 100;
-
     private static readonly JsonSerializerOptions jsonOptions = new() {
         WriteIndented = true,
     };
@@ -42,6 +41,17 @@ public class SplitwiseJsonExporter
         this.client = client;
         this.resourcesExporter = resourcesExporter;
     }
+
+    /// <summary>
+    /// Default number of expenses to retrieve per query.
+    /// </summary>
+    public const int DefaultExpensesPerQuery = 500;
+
+    /// <summary>
+    /// Default maximum notifications to retrieve.
+    /// </summary>
+    public const int DefaultNotificationsLimit = 10_000;
+
 
     /// <summary>
     /// Export the information of the current user.
@@ -137,6 +147,32 @@ public class SplitwiseJsonExporter
             await SerializeDataAsync(response, outputDirectory, $"expenses_{index}.json");
             index++;
         } while (response.Expenses?.Count == expensesPerQuery);
+    }
+
+    /// <summary>
+    /// Export the notifications / activity messages of the account.
+    /// </summary>
+    /// <param name="outputDirectory">Directory to save the export.</param>
+    /// <param name="downloadImages">Value indicating whether the linked images should be downloaded or kept as URLs.</param>
+    /// <param name="limit">Maximum number of entries.</param>
+    /// <returns>Asynchronous task</returns>
+    public async Task ExportNotificationsAsync(
+        string outputDirectory,
+        bool downloadImages,
+        int limit = DefaultNotificationsLimit)
+    {
+        // Unfortunately this API doesn't allow to iterate to get all but it has a very high limit.
+        Get_notificationsGetResponse response = await client.Get_notifications.GetAsync(
+            config => config.QueryParameters.Limit = limit)
+            ?? throw new InvalidDataException("Unexpected data response");
+
+        if (downloadImages) {
+            foreach (Notification notification in response.Notifications ?? []) {
+                await resourcesExporter.ExportNotificationAsync(notification, outputDirectory);
+            }
+        }
+
+        await SerializeDataAsync(response, outputDirectory, "activity.json");
     }
 
     private async Task FetchExpenseCommentsAsync(Expense expense)

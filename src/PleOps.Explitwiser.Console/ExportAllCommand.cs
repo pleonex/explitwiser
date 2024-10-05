@@ -26,8 +26,13 @@ internal class ExportAllCommand : AsyncCommand<ExportAllCommand.Settings>
 
         [CommandOption("--expenses-per-query")]
         [Description("Number of expenses to fetch per API query")]
-        [DefaultValue(100)]
+        [DefaultValue(SplitwiseJsonExporter.DefaultExpensesPerQuery)]
         public int ExpensesPerQuery { get; set; }
+
+        [CommandOption("--notifications-limit")]
+        [Description("Maximum number of notifications to retrieve")]
+        [DefaultValue(SplitwiseJsonExporter.DefaultNotificationsLimit)]
+        public int NotificationsLimit { get; set; }
     }
 
     public override async Task<int> ExecuteAsync(CommandContext context, Settings settings)
@@ -74,6 +79,13 @@ internal class ExportAllCommand : AsyncCommand<ExportAllCommand.Settings>
                 downloadResources,
                 downloadComments,
                 settings.ExpensesPerQuery));
+
+        await AnsiConsole.Status().StartAsync(
+            "Exporting notifications",
+            async _ => await exporter.ExportNotificationsAsync(
+                outputDirectory,
+                downloadResources,
+                settings.NotificationsLimit));
 
         return 0;
     }

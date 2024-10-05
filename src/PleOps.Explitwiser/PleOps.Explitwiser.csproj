@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="../../docs/index.md" Pack="true" PackagePath="$(PackageReadmeFile)" Visible="False" />
+    <None Include="../../README.md" Pack="true" PackagePath="$(PackageReadmeFile)" Visible="False" />
   </ItemGroup>
 
   <ItemGroup>
